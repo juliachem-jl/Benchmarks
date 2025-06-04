@@ -8,6 +8,8 @@ using Pkg
 using LinearAlgebra
 using MPI 
 using Base.Threads
+using HDF5
+# using JuliaChem.Properties
 
 JC_PATH = ""
 if haskey(ENV, "JC_PATH")
@@ -44,10 +46,14 @@ function run_file(input_file_path, input_file_name, output_dir, scf_keywords, ba
 
         run_time = @elapsed rhf_energy = JuliaChem.JCRHF.Energy.run(mol, basis, keywords["scf"]; output=output_print_level)
         timings = rhf_energy["Timings"]
+       
         timings.run_name = name
         timings.run_time = run_time
 
-        save_jc_timings_to_hdf5(timings, joinpath(output_dir, "$(name)-$(rank).h5"))
+
+        hdf5_file = HDF5.h5open(joinpath(output_dir, "$(name)-$(rank).h5"), "w")
+        save_jc_timings_to_hdf5(timings, hdf5_file)
+        close(hdf5_file)
 
         rhf_energy = nothing 
 
