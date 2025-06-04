@@ -8,7 +8,13 @@ module load julia/1.11.4
 
 # export PATH=/pscratch/sd/j/jhayes1/software/julia-1.11.4/bin/:$PATH
 
-export JC_PATH=/global/cfs/cdirs/m4265/cfundell/JuliaChem.jl/
+
+#check that the JC_PATH environment variable is set
+if [ -z "$JC_PATH" ]; then
+    echo "Error: JC_PATH environment variable is not set."
+    echo "Please set JC_PATH to the path of your JuliaChem installation."
+    exit 1
+fi
 
 export script_path=$JC_PATH/Benchmarks/scripts/mixed_precision
 
@@ -28,12 +34,12 @@ export input_file_path=$JC_PATH/example_inputs/S22
 
 
 #export basis_id="cc-pvdz-ri"
-#export basis_id="cc-pvdz-jk"
-export basis_id="6-311++G_2d_2p_"
+export basis_id="cc-pvdz-jk"
+# export basis_id="6-311++G_2d_2p_"
 export run_start_index=1
 export number_of_runs=1
-export file_start_index=1
-export file_end_index=1
+export file_start_index=3
+export file_end_index=3
 export settings_id=DF_RHF_denseCPU_mixed
 
 # export output_full_path=$script_path/S22/${settings_id}_${basis_id}_Qtest
@@ -51,7 +57,11 @@ export settings_id=DF_RHF_denseCPU_mixed
 #   &>> $output_full_path/output.log
 
 export DO_MIXED=true
-export output_full_path=$script_path/S22/${settings_id}_${basis_id}_timingtest
+export output_full_path=$script_path/S22/${settings_id}_${basis_id}_Q_range_mode
+
+export mixed_df_Q_range_mode="divide_total_Q"
+export mixed_df_Q_ranges="2,4,8,10"
+
 mkdir -p $output_full_path
 
 # julia --sysimage=$JULIACHEM_SYSIMG_PATH \

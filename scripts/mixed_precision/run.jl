@@ -85,6 +85,7 @@ function main(inputs)
         input_files_paths = input_files_paths[file_start_index:end]
         input_file_names = input_file_names[file_start_index:end]
     end
+    
 
 
     scf_keywords = get_settings(settings_id)
@@ -92,6 +93,45 @@ function main(inputs)
     if haskey(ENV, "df_exchange_n_blocks")
         scf_keywords["df_exchange_n_blocks"] = parse(Int, ENV["df_exchange_n_blocks"])
     end
+
+    #options are divide_total_aux e.g. 1,2,4,8,9,10 , range_of_range_counts e.g. 1:10, list_of_range_counts e.g. 1,2,5,10 
+    Q_range_mode_env = "divide_total_aux"
+    if haskey(ENV, "mixed_df_Q_range_mode")
+        Q_range_mode_env =  ENV["mixed_df_Q_range_mode"]
+    end
+
+    Q_ranges_string = "4"
+
+    Q_range_iterable = 4:4 
+
+    Q_divisors = Int[]
+    if haskey(ENV, "mixed_df_Q_ranges")
+        Q_ranges_string = ENV["mixed_df_Q_ranges"]
+    end
+
+    if Q_range_mode_env == "range_of_range_counts"
+        Q_range_mode = "num_ranges"
+
+        range_start, range_end = split(Q_ranges_string, ":")
+        range_start = parse(Int, range_start)
+        range_end = parse(Int, range_end)
+        Q_range_iterable = range_start:range_end
+        println("doing range of Q ranges $Q_range_iterable")
+    elseif Q_range_mode_env == "list_of_range_counts"
+        Q_range_mode = "num_ranges"
+        Q_range_strings = split(Q_ranges_string, ",")
+        Q_range_iterable = parse.(Int, Q_range_strings)
+        println("doing list of Q ranges: $Q_range_iterable")
+    else #assume Q_range_mode_env == "divide_total_aux"
+        Q_range_mode = "divide_total_Q"
+        Q_divisor_strings = split(Q_ranges_string, ",")
+        Q_range_iterable = parse.(Int, Q_divisor_strings)
+        println("doing divide total aux with divisors: $Q_range_iterable")
+    end
+
+   
+
+
     basis, aux_basis = get_basis_names(basis_id)
 
     JuliaChem.initialize()
@@ -150,12 +190,21 @@ function main(inputs)
     scf_keywords["num_devices"] = 1
 
     output_print_level = 2
-    for i in eachindex(input_files_paths)
-        #create folder for path_to_outputs/input_file_names[i]
-        input_file_path = input_files_paths[i]
-        input_file_name = input_file_names[i]
-        output_dir = create_output_folderV2(path_to_outputs, input_file_path, rank)
-        run_file(input_file_path, input_file_name, output_dir, scf_keywords, basis, aux_basis, run_index_start, number_of_runs, output_print_level)
+    for q_range_value in Q_range_iterable
+
+        if Q_range_mode == "divide_total_Q"
+            scf_keywords["Q_ranges_divide_Q_by"] = q_range_value
+        else
+           scf_keywords["num_Q_ranges"] = q_range_value
+        end
+
+        for i in eachindex(input_files_paths)
+            #create folder for path_to_outputs/input_file_names[i]
+            input_file_path = input_files_paths[i]
+            input_file_name = input_file_names[i]
+            output_dir = create_output_folderV2(path_to_outputs, input_file_path, rank)
+            run_file(input_file_path, input_file_name, output_dir, scf_keywords, basis, aux_basis, run_index_start, number_of_runs, output_print_level)
+        end
     end
 
     # JuliaChem.finalize()
