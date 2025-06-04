@@ -197,7 +197,6 @@ function main(inputs)
         else
            scf_keywords["num_Q_ranges"] = q_range_value
         end
-
         for i in eachindex(input_files_paths)
             #create folder for path_to_outputs/input_file_names[i]
             input_file_path = input_files_paths[i]
@@ -205,6 +204,7 @@ function main(inputs)
             output_dir = create_output_folderV2(path_to_outputs, input_file_path, rank)
             run_file(input_file_path, input_file_name, output_dir, scf_keywords, basis, aux_basis, run_index_start, number_of_runs, output_print_level)
         end
+        run_index_start +=1
     end
 
     # JuliaChem.finalize()
