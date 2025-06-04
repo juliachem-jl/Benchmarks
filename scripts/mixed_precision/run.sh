@@ -59,8 +59,9 @@ export settings_id=DF_RHF_denseCPU_mixed
 export DO_MIXED=true
 export output_full_path=$script_path/S22/${settings_id}_${basis_id}_Q_range_mode
 
-export mixed_df_Q_range_mode="divide_total_Q"
-export mixed_df_Q_ranges="2,4,8,10"
+#options are divide_total_aux e.g. 1,2,4,8,9,10 , range_of_range_counts e.g. 1:10, list_of_range_counts e.g. 1,2,5,10 
+export mixed_df_Q_range_mode="range_of_range_counts"
+export mixed_df_Q_ranges="290:295"
 
 mkdir -p $output_full_path
 
