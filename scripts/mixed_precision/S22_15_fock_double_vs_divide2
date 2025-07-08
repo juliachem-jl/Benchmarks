@@ -1,0 +1,29 @@
+ERROR: LoadError: SystemError: opening file "S22/DF_RHF_denseCPU_mixed_6-311++G_2d_2p__S22_15_fock/output.log": No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:295
+  [4] open
+    @ ./iostream.jl:277 [inlined]
+  [5] open(f::Base.var"#494#495"{@Kwargs{}}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:408
+  [6] open
+    @ ./io.jl:407 [inlined]
+  [7] #readlines#493
+    @ ./io.jl:704 [inlined]
+  [8] readlines
+    @ ./io.jl:703 [inlined]
+  [9] get_fock_size_and_line
+    @ /global/cfs/cdirs/m4265/mixed_precision/JuliaChem.jl/Benchmarks/scripts/mixed_precision/compare_fock.jl:5 [inlined]
+ [10] get_fock_matrix(filename::String)
+    @ Main /global/cfs/cdirs/m4265/mixed_precision/JuliaChem.jl/Benchmarks/scripts/mixed_precision/compare_fock.jl:19
+ [11] compute_fock_difference(file1::String, file2::String)
+    @ Main /global/cfs/cdirs/m4265/mixed_precision/JuliaChem.jl/Benchmarks/scripts/mixed_precision/compare_fock.jl:36
+ [12] top-level scope
+    @ /global/cfs/cdirs/m4265/mixed_precision/JuliaChem.jl/Benchmarks/scripts/mixed_precision/compare_fock.jl:61
+in expression starting at /global/cfs/cdirs/m4265/mixed_precision/JuliaChem.jl/Benchmarks/scripts/mixed_precision/compare_fock.jl:61
+File 1 path: S22/DF_RHF_denseCPU_mixed_6-311++G_2d_2p__S22_15_fock/output.log
+File 2 path: S22/DF_RHF_denseCPU_mixed_6-311++G_2d_2p__divide_total_aux_S22_15_fock_divide2/output.log

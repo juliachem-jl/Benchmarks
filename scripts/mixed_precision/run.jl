@@ -94,6 +94,15 @@ function main(inputs)
         scf_keywords["df_exchange_n_blocks"] = parse(Int, ENV["df_exchange_n_blocks"])
     end
 
+    if haskey(ENV, "contraction_float_type")
+        scf_keywords["contraction_float_type"] =  ENV["contraction_float_type"]
+    end
+
+    if haskey(ENV, "use_sym")
+        scf_keywords["df_use_J_sym"] = parse(Bool, ENV["use_sym"])
+        scf_keywords["df_use_K_sym"] = parse(Bool, ENV["use_sym"])
+    end
+
     #options are divide_total_aux e.g. 1,2,4,8,9,10 , range_of_range_counts e.g. 1:10, list_of_range_counts e.g. 1,2,5,10 
     Q_range_mode_env = "divide_total_aux"
     if haskey(ENV, "mixed_df_Q_range_mode")
@@ -112,10 +121,18 @@ function main(inputs)
     if Q_range_mode_env == "range_of_range_counts"
         Q_range_mode = "num_ranges"
 
-        range_start, range_end = split(Q_ranges_string, ":")
-        range_start = parse(Int, range_start)
-        range_end = parse(Int, range_end)
-        Q_range_iterable = range_start:range_end
+        range_params = split(Q_ranges_string, ":")
+        if length(range_params) < 2
+            error("Q_ranges_string must be in the format 'start:end' for range_of_range_counts mode")
+        elseif length(range_params) == 2
+            range_start, range_end = parse.(Int, range_params)
+            Q_range_iterable = range_start:range_end
+        elseif length(range_params) == 3
+            range_start, range_step,range_end = parse.(Int,range_params)
+            Q_range_iterable = range_start:range_step:range_end
+        else
+            error("Q_ranges_string must be in the format 'start:end' or 'start:end:step' for range_of_range_counts mode")
+        end
         println("doing range of Q ranges $Q_range_iterable")
     elseif Q_range_mode_env == "list_of_range_counts"
         Q_range_mode = "num_ranges"

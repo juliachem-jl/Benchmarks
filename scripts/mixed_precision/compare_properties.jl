@@ -43,24 +43,41 @@ function main(paths_to_outputs)
         i += 1
     end
  
+    # Calculate the minimum, maximum, and average E differences
     max_diff = -100000.0
     max_diff_input = ""
+    min_diff = 100000.0
+    min_diff_input = ""
+    difference_total = 0
+    number_of_inputs = 0
     input_file_keys = keys(scf_energies_for_run_type[1])
     for input_key in input_file_keys
         scf_energy_1 = scf_energies_for_run_type[1][input_key]
         scf_energy_2 = scf_energies_for_run_type[2][input_key]
         diff = abs(scf_energy_1 - scf_energy_2)
+        difference_total += diff
         println("SCF ΔE for $input_key: | $(scf_energy_1) - $(scf_energy_2) | = $diff")
+        # check if new maximum
         if diff > max_diff
             max_diff = diff
             max_diff_input = input_key
         end
+        # check if new minimum 
+        if diff < min_diff
+            min_diff = diff
+            min_diff_input = input_key
+        end        
+
+        number_of_inputs += 1
     end
     println("Maximum difference in SCF energies: $max_diff")
- 
- 
+    println("Minimum difference in SCF energies: $min_diff") 
+
+    average_diff = difference_total / number_of_inputs
+    println("Average difference in SCF energies: $average_diff")
+
     
- 
+
     # display(scf_energies_for_run_type)
 end
  
@@ -68,7 +85,7 @@ end
 # path2 =  "/pscratch/sd/j/jhayes1/source/JuliaChem.jl/JuliaChem-Papers/DF-RHF-Paper/Benchmarks/0.4.3/1hsg/perlmutter/DF_RHF_screenedCPU_no_sym"
 # main([path1, path2])
 
-path1="/global/cfs/cdirs/m4265/cfundell/JuliaChem.jl/Benchmarks/scripts/mixed_precision/S22/DF_RHF_denseCPU_mixed_6-311++G_2d_2p__divide10"
-path2="/global/cfs/cdirs/m4265/cfundell/JuliaChem.jl/Benchmarks/scripts/mixed_precision/S22/DF_RHF_denseCPU_DOUBLE_6-311" 
+path1 = "/global/cfs/cdirs/m4265/cfundell/JuliaChem_runs_only/JuliaChem.jl/Benchmarks/scripts/mixed_precision/DF_RHF_screenedCPU_6-311++G_2d_2p_"
+path2 = "/global/cfs/cdirs/m4265/mixed_precision/JuliaChem.jl/Benchmarks/scripts/mixed_precision/DF_RHF_screenedCPU_mixed_6-311++G_2d_2p__S22_divide10"
 
 main([path1, path2]) 
